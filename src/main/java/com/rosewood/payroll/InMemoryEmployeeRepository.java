@@ -1,19 +1,23 @@
 package com.rosewood.payroll;
 
-import java.util.HashMap;
+import java.util.Collection;
+
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class InMemoryEmployeeRepository implements EmployeeRepository {
 
-    private final Map<String, Employee> employees = new HashMap<>();
+    private final Map<String, Employee> employeesById;
 
-    public InMemoryEmployeeRepository() {
-        employees.put("e1", new Employee("e1", "Efua Sarpong"));
-        employees.put("e2", new Employee("e2", "Kwame Owusu"));
+    public InMemoryEmployeeRepository(Collection<Employee> employees) {
+        this.employeesById = employees.stream()
+                .collect(Collectors.toUnmodifiableMap(Employee::id, Function.identity()));
     }
 
     @Override
-    public Employee findById(String id) {
-        return employees.get(id); // returns null when the id is not found
+    public Optional<Employee> findById(String id) {
+        return Optional.ofNullable(employeesById.get(id));
     }
 }

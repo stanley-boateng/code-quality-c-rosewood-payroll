@@ -1,14 +1,12 @@
 package com.rosewood.payroll;
 
-public class Employee {
-    private final String id;
-    private final String name;
-
-    public Employee(String id, String name) {
-        this.id = id;
-        this.name = name;
+public record Employee(String id, String name) {
+    public Employee {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Employee id must not be blank");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Employee name must not be blank");
+        }
     }
-
-    public String getId() { return id; }
-    public String getName() { return name; }
 }

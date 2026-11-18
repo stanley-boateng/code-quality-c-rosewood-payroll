@@ -1,13 +1,20 @@
 package com.rosewood.payroll;
 
+import java.util.List;
+
 public class PayrollCalculator {
 
     // The calculator makes its own repository, so callers and tests cannot give it another.
-    private final EmployeeRepository repository = new InMemoryEmployeeRepository();
+    private final EmployeeRepository repository = new InMemoryEmployeeRepository(List.of(
+            new Employee("e1", "Efua Sarpong"),
+            new Employee("e2", "Kwame Owusu")
+    ));
+
+
 
     public double calculateNetPay(String employeeId, double hoursWorked, double hourlyRate) {
         try {
-            Employee employee = repository.findById(employeeId);
+            Employee employee = repository.findById(employeeId).orElse(null);
 
             double gross = hoursWorked * hourlyRate;
 
@@ -27,7 +34,7 @@ public class PayrollCalculator {
             }
 
             double net = gross - (gross * taxRate);
-            System.out.println("Net pay for " + employee.getName() + ": GHS " + net);
+            System.out.println("Net pay for " + employee.name() + ": GHS " + net);
             return net;
         } catch (Exception e) {
             // something went wrong (for example the employee was not found) - return zero
