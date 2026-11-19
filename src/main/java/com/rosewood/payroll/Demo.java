@@ -13,7 +13,6 @@ import com.rosewood.payroll.tax.InMemoryTaxBandRepository;
 import com.rosewood.payroll.tax.RateTaxBand;
 import com.rosewood.payroll.tax.TaxBandRepository;
 import com.rosewood.payroll.tax.TaxCalculator;
-
 import java.math.BigDecimal;
 import java.util.List;
 

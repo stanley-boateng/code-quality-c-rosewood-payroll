@@ -1,7 +1,6 @@
 package com.rosewood.payroll.payroll;
 
 import com.rosewood.payroll.employee.Employee;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 

@@ -7,7 +7,6 @@ import com.rosewood.payroll.grosspay.GrossPayPolicy;
 import com.rosewood.payroll.grosspay.WorkPeriod;
 import com.rosewood.payroll.tax.TaxBandConfigurationException;
 import com.rosewood.payroll.tax.TaxPolicy;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;

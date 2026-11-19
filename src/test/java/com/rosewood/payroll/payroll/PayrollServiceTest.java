@@ -1,22 +1,20 @@
 package com.rosewood.payroll.payroll;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.rosewood.payroll.employee.Employee;
 import com.rosewood.payroll.employee.EmployeeNotFoundException;
 import com.rosewood.payroll.employee.InMemoryEmployeeRepository;
 import com.rosewood.payroll.grosspay.GrossPayPolicy;
 import com.rosewood.payroll.grosspay.WorkPeriod;
 import com.rosewood.payroll.tax.TaxPolicy;
-
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 class PayrollServiceTest {
 

@@ -1,8 +1,8 @@
 package com.rosewood.payroll;
 
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.math.BigDecimal;
 
 /**
  * Compares money amounts by value, so 150 and 150.0000 are equal. Tax bands and gross pay

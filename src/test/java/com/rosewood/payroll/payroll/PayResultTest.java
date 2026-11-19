@@ -1,14 +1,12 @@
 package com.rosewood.payroll.payroll;
 
-import com.rosewood.payroll.employee.Employee;
-
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.rosewood.payroll.employee.Employee;
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
 
 class PayResultTest {
 
