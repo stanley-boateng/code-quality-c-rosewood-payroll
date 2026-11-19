@@ -1,23 +1,35 @@
 package com.rosewood.payroll;
 
 import java.util.Collection;
-
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class InMemoryEmployeeRepository implements EmployeeRepository {
+/** Holds a fixed set of employees in memory and finds them by id. */
+public final class InMemoryEmployeeRepository implements EmployeeRepository {
 
     private final Map<String, Employee> employeesById;
 
+    /**
+     * @throws IllegalArgumentException if two employees share an id
+     */
     public InMemoryEmployeeRepository(Collection<Employee> employees) {
-        this.employeesById = employees.stream()
-                .collect(Collectors.toUnmodifiableMap(Employee::id, Function.identity()));
+        Objects.requireNonNull(employees, "employees");
+        Map<String, Employee> byId = new HashMap<>();
+        for (Employee employee : employees) {
+            Objects.requireNonNull(employee, "employee");
+            if (byId.putIfAbsent(employee.id(), employee) != null) {
+                // Id only: names are personal data and must not appear in exception messages.
+                throw new IllegalArgumentException("Duplicate employee id: " + employee.id());
+            }
+        }
+        this.employeesById = Map.copyOf(byId);
     }
 
     @Override
     public Optional<Employee> findById(String id) {
+        Objects.requireNonNull(id, "id");
         return Optional.ofNullable(employeesById.get(id));
     }
 }
