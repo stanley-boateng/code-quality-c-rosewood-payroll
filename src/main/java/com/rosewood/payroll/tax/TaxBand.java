@@ -2,6 +2,9 @@ package com.rosewood.payroll.tax;
 
 import java.math.BigDecimal;
 
+/**
+ * One band of the tax table: the gross pay it covers and how it taxes that pay.
+ */
 public interface TaxBand {
 
     /**
@@ -17,5 +20,5 @@ public interface TaxBand {
     /**
      * @return tax due on this gross pay under this band's rules; between 0 and grossPay.
      */
-    BigDecimal taxFor(BigDecimal grossPay);
+    BigDecimal calculateTax(BigDecimal grossPay);
 }

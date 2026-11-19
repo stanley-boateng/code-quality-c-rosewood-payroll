@@ -12,10 +12,12 @@ public record WorkPeriod(BigDecimal hoursWorked, BigDecimal hourlyRate) {
         Objects.requireNonNull(hoursWorked, "hoursWorked");
         Objects.requireNonNull(hourlyRate, "hourlyRate");
         if (hoursWorked.signum() < 0) {
-            throw new InvalidWorkPeriodException("Hours worked must not be negative: " + hoursWorked);
+            throw new InvalidWorkPeriodException(
+                    "Hours worked must not be negative: " + hoursWorked);
         }
         if (hourlyRate.signum() <= 0) {
-            throw new InvalidWorkPeriodException("Hourly rate must be greater than zero: " + hourlyRate);
+            throw new InvalidWorkPeriodException(
+                    "Hourly rate must be greater than zero: " + hourlyRate);
         }
     }
 
@@ -32,8 +34,9 @@ public record WorkPeriod(BigDecimal hoursWorked, BigDecimal hourlyRate) {
         Objects.requireNonNull(value, field);
         try {
             return new BigDecimal(value.trim());
-        } catch (NumberFormatException e) {
-            throw new InvalidWorkPeriodException(field + " is not a number: '" + value + "'", e);
+        } catch (NumberFormatException exception) {
+            throw new InvalidWorkPeriodException(
+                    field + " is not a number: '" + value + "'", exception);
         }
     }
 }

@@ -91,20 +91,22 @@ namespace grosspay {
   }
   class GrossPayPolicy {
     <<interface>>
-    +grossPay(WorkPeriod) BigDecimal
+    +calculateGrossPay(WorkPeriod) BigDecimal
   }
   class OvertimeGrossPayPolicy
   class InvalidWorkPeriodException
 }
 namespace tax {
-  class TaxCalculator {
-    +taxFor(BigDecimal gross) BigDecimal
+  class TaxPolicy {
+    <<interface>>
+    +calculateTax(BigDecimal gross) BigDecimal
   }
+  class TaxCalculator
   class TaxBand {
     <<interface>>
     +name() String
     +appliesTo(BigDecimal gross) boolean
-    +taxFor(BigDecimal gross) BigDecimal
+    +calculateTax(BigDecimal gross) BigDecimal
   }
   class RateTaxBand
   class TaxBandRepository {
@@ -122,7 +124,8 @@ namespace error {
 Demo ..> PayrollService : wires
 PayrollService --> EmployeeRepository
 PayrollService --> GrossPayPolicy
-PayrollService --> TaxCalculator
+PayrollService --> TaxPolicy
+TaxCalculator ..|> TaxPolicy
 PayrollService ..> PayResult : creates
 PayResult --> Employee
 EmployeeRepository ..> Employee

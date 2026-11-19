@@ -4,15 +4,15 @@ import com.rosewood.payroll.employee.Employee;
 import com.rosewood.payroll.employee.EmployeeRepository;
 import com.rosewood.payroll.employee.InMemoryEmployeeRepository;
 import com.rosewood.payroll.error.PayrollException;
+import com.rosewood.payroll.grosspay.GrossPayPolicy;
+import com.rosewood.payroll.grosspay.OvertimeGrossPayPolicy;
+import com.rosewood.payroll.grosspay.WorkPeriod;
 import com.rosewood.payroll.payroll.PayResult;
 import com.rosewood.payroll.payroll.PayrollService;
 import com.rosewood.payroll.tax.InMemoryTaxBandRepository;
 import com.rosewood.payroll.tax.RateTaxBand;
 import com.rosewood.payroll.tax.TaxBandRepository;
 import com.rosewood.payroll.tax.TaxCalculator;
-import com.rosewood.payroll.grosspay.GrossPayPolicy;
-import com.rosewood.payroll.grosspay.OvertimeGrossPayPolicy;
-import com.rosewood.payroll.grosspay.WorkPeriod;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +22,9 @@ import java.util.List;
  * This is the only class that knows which concrete implementations and settings are used.
  */
 public class Demo {
+
+    private static final BigDecimal STANDARD_HOURS_PER_PERIOD = new BigDecimal("40");
+    private static final BigDecimal TIME_AND_A_HALF_PREMIUM = new BigDecimal("0.5");
 
     public static void main(String[] args) {
         PayrollService payroll = createPayrollService();
@@ -37,9 +40,8 @@ public class Demo {
                 new Employee("e1", "Efua Sarpong"),
                 new Employee("e2", "Kwame Owusu")));
 
-        GrossPayPolicy grossPayPolicy = new OvertimeGrossPayPolicy(
-                new BigDecimal("40"),    // standard hours per period
-                new BigDecimal("0.5"));  // overtime premium: time-and-a-half
+        GrossPayPolicy grossPayPolicy =
+                new OvertimeGrossPayPolicy(STANDARD_HOURS_PER_PERIOD, TIME_AND_A_HALF_PREMIUM);
 
         TaxBandRepository taxBands = new InMemoryTaxBandRepository(List.of(
                 RateTaxBand.between("LOW", "0", "1000", "0.05"),
@@ -49,14 +51,16 @@ public class Demo {
         return new PayrollService(employees, grossPayPolicy, new TaxCalculator(taxBands));
     }
 
-    private static void printPay(PayrollService payroll, String employeeId, String hours, String rate) {
+    private static void printPay(
+            PayrollService payroll, String employeeId, String hours, String rate) {
         try {
             PayResult result = payroll.calculatePay(employeeId, WorkPeriod.of(hours, rate));
             System.out.printf("%s (%s): gross GHS %s, tax GHS %s, net GHS %s%n",
                     result.employee().name(), employeeId,
                     result.grossPay(), result.tax(), result.netPay());
-        } catch (PayrollException e) {
-            System.out.println("Pay NOT calculated for " + employeeId + ": " + e.getMessage());
+        } catch (PayrollException exception) {
+            System.out.println(
+                    "Pay NOT calculated for " + employeeId + ": " + exception.getMessage());
         }
     }
 }

@@ -10,5 +10,5 @@ public interface GrossPayPolicy {
     /**
      * @return gross pay for the period; never negative.
      */
-    BigDecimal grossPay(WorkPeriod period);
+    BigDecimal calculateGrossPay(WorkPeriod period);
 }

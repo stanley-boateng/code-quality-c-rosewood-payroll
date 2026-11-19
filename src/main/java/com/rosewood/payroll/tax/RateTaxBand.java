@@ -9,19 +9,26 @@ import java.util.Objects;
 public final class RateTaxBand implements TaxBand {
 
     private final String name;
-    private final BigDecimal from;  // inclusive
-    private final BigDecimal upTo;  // exclusive; null only for the open-ended top band
+    private final BigDecimal lowerLimitInclusive;
+    private final BigDecimal upperLimitExclusive;
     private final BigDecimal rate;
 
-    private RateTaxBand(String name, BigDecimal from, BigDecimal upTo, BigDecimal rate) {
+    /**
+     * @param upperLimitExclusive null only for the open-ended top band
+     */
+    private RateTaxBand(String name, BigDecimal lowerLimitInclusive,
+            BigDecimal upperLimitExclusive, BigDecimal rate) {
         this.name = Objects.requireNonNull(name, "name");
-        this.from = Objects.requireNonNull(from, "from");
+        this.lowerLimitInclusive = Objects.requireNonNull(lowerLimitInclusive, "lowerLimit");
+        this.upperLimitExclusive = upperLimitExclusive;
         this.rate = Objects.requireNonNull(rate, "rate");
-        this.upTo = upTo;
-        if (from.signum() < 0) {
-            throw new IllegalArgumentException(name + ": lower limit must not be negative: " + from);
+        if (lowerLimitInclusive.signum() < 0) {
+            throw new IllegalArgumentException(
+                    name + ": lower limit must not be negative: " + lowerLimitInclusive);
         }
-        if (upTo != null && upTo.compareTo(from) <= 0) {
+        boolean upperLimitTooLow = upperLimitExclusive != null
+                && upperLimitExclusive.compareTo(lowerLimitInclusive) <= 0;
+        if (upperLimitTooLow) {
             throw new IllegalArgumentException(name + ": upper limit must be above lower limit");
         }
         if (rate.signum() < 0 || rate.compareTo(BigDecimal.ONE) > 0) {
@@ -30,37 +37,28 @@ public final class RateTaxBand implements TaxBand {
     }
 
     /**
-     * A band from {@code from} (inclusive) up to {@code upTo} (exclusive).
+     * A band from {@code lowerLimit} (inclusive) up to {@code upperLimit} (exclusive).
      *
      * @throws IllegalArgumentException if a value is not a number or the band is invalid
      */
-    public static RateTaxBand between(String name, String from, String upTo, String rate) {
+    public static RateTaxBand between(
+            String name, String lowerLimit, String upperLimit, String rate) {
         return new RateTaxBand(name,
-                parse(name, "lower limit", from),
-                parse(name, "upper limit", upTo),
+                parse(name, "lower limit", lowerLimit),
+                parse(name, "upper limit", upperLimit),
                 parse(name, "rate", rate));
     }
 
     /**
-     * An open-ended band from {@code from} (inclusive) upwards.
+     * An open-ended band from {@code lowerLimit} (inclusive) upwards.
      *
      * @throws IllegalArgumentException if a value is not a number or the band is invalid
      */
-    public static RateTaxBand from(String name, String from, String rate) {
+    public static RateTaxBand from(String name, String lowerLimit, String rate) {
         return new RateTaxBand(name,
-                parse(name, "lower limit", from),
+                parse(name, "lower limit", lowerLimit),
                 null,
                 parse(name, "rate", rate));
-    }
-
-    private static BigDecimal parse(String bandName, String field, String value) {
-        Objects.requireNonNull(value, bandName + " " + field);
-        try {
-            return new BigDecimal(value.trim());
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                    bandName + ": " + field + " is not a number: '" + value + "'", e);
-        }
     }
 
     @Override
@@ -70,13 +68,24 @@ public final class RateTaxBand implements TaxBand {
 
     @Override
     public boolean appliesTo(BigDecimal grossPay) {
-        boolean atOrAboveFrom = grossPay.compareTo(from) >= 0;
-        boolean belowUpTo = upTo == null || grossPay.compareTo(upTo) < 0;
-        return atOrAboveFrom && belowUpTo;
+        boolean atOrAboveLowerLimit = grossPay.compareTo(lowerLimitInclusive) >= 0;
+        boolean belowUpperLimit =
+                upperLimitExclusive == null || grossPay.compareTo(upperLimitExclusive) < 0;
+        return atOrAboveLowerLimit && belowUpperLimit;
     }
 
     @Override
-    public BigDecimal taxFor(BigDecimal grossPay) {
+    public BigDecimal calculateTax(BigDecimal grossPay) {
         return grossPay.multiply(rate);
+    }
+
+    private static BigDecimal parse(String bandName, String field, String value) {
+        Objects.requireNonNull(value, bandName + " " + field);
+        try {
+            return new BigDecimal(value.trim());
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(
+                    bandName + ": " + field + " is not a number: '" + value + "'", exception);
+        }
     }
 }
