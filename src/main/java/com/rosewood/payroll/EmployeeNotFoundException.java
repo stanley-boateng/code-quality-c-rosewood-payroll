@@ -1,6 +1,11 @@
 package com.rosewood.payroll;
 
+/**
+ * No employee exists with the requested id, so their pay cannot be calculated.
+ */
 public class EmployeeNotFoundException extends PayrollException {
+
+    private static final long serialVersionUID = 1L;
 
     private final String employeeId;
 

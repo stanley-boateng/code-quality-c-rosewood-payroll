@@ -3,7 +3,9 @@ package com.rosewood.payroll;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-/** Hours worked in a pay period and the hourly rate they are paid at. Always valid once created. */
+/**
+ * Hours worked in a pay period and the hourly rate they are paid at. Always valid once created.
+ */
 public record WorkPeriod(BigDecimal hoursWorked, BigDecimal hourlyRate) {
 
     public WorkPeriod {

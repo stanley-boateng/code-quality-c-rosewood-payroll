@@ -1,12 +1,10 @@
 package com.rosewood.payroll;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
-/** Holds a fixed set of employees in memory and finds them by id. */
+/**
+ * Holds a fixed set of employees in memory and finds them by id.
+ */
 public final class InMemoryEmployeeRepository implements EmployeeRepository {
 
     private final Map<String, Employee> employeesById;

@@ -3,7 +3,7 @@ package com.rosewood.payroll;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class RateTaxBand  implements TaxBand {
+public final class RateTaxBand implements TaxBand {
 
     private final String name;
     private final BigDecimal from;  //inclusive
@@ -26,12 +26,16 @@ public class RateTaxBand  implements TaxBand {
         }
     }
 
-    /** A band from {@code from} (inclusive) up to {@code upTo} (exclusive). */
+    /**
+     * A band from {@code from} (inclusive) up to {@code upTo} (exclusive).
+     */
     public static RateTaxBand between(String name, String from, String upTo, String rate) {
         return new RateTaxBand(name, new BigDecimal(from), new BigDecimal(upTo), new BigDecimal(rate));
     }
 
-    /** An open-ended band from {@code from} (inclusive) upwards. */
+    /**
+     * An open-ended band from {@code from} (inclusive) upwards.
+     */
     public static RateTaxBand from(String name, String from, String rate) {
         return new RateTaxBand(name, new BigDecimal(from), null, new BigDecimal(rate));
     }

@@ -15,7 +15,7 @@ public final class TaxCalculator {
 
     /**
      * @throws TaxBandConfigurationException if no band or more than one band covers this gross pay,
-     *         or the chosen band returns a tax outside 0..grossPay
+     *                                       or the chosen band returns a tax outside 0..grossPay
      */
     public BigDecimal taxFor(BigDecimal grossPay) {
         Objects.requireNonNull(grossPay, "grossPay");
