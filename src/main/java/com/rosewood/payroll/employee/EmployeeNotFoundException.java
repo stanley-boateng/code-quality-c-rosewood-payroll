@@ -1,4 +1,6 @@
-package com.rosewood.payroll;
+package com.rosewood.payroll.employee;
+
+import com.rosewood.payroll.error.PayrollException;
 
 /**
  * No employee exists with the requested id, so their pay cannot be calculated.

@@ -1,4 +1,4 @@
-package com.rosewood.payroll;
+package com.rosewood.payroll.error;
 
 /**
  * Base type for failures in calculating pay. Callers that process many employees

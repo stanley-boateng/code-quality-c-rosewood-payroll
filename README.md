@@ -46,3 +46,105 @@ See the lab brief for the full list: your written analysis (of the code and the
 tests), the refactored code, robust exception handling, a real test suite, a
 short rationale, and one improvement beyond the brief. You will talk through your
 work in a live review.
+
+## Design
+
+Classes are grouped by feature. `employee`, `grosspay` and `tax` don't depend on each other: `PayrollService` is the only class that uses all three, and `Demo` (the composition root) wires the concrete classes together. A new tax rule is a new `TaxBand` implementation plus one line in `Demo`; no existing class changes.
+
+```mermaid
+classDiagram
+direction TB
+namespace app {
+  class Demo {
+    +main(String[] args)$
+  }
+}
+namespace payroll {
+  class PayrollService {
+    +calculatePay(String employeeId, WorkPeriod period) PayResult
+  }
+  class PayResult {
+    <<record>>
+    employee
+    grossPay
+    tax
+    netPay
+  }
+}
+namespace employee {
+  class Employee {
+    <<record>>
+    id
+    name
+  }
+  class EmployeeRepository {
+    <<interface>>
+    +findById(String id) Optional~Employee~
+  }
+  class InMemoryEmployeeRepository
+  class EmployeeNotFoundException
+}
+namespace grosspay {
+  class WorkPeriod {
+    <<record>>
+    hoursWorked
+    hourlyRate
+    +of(String, String)$ WorkPeriod
+  }
+  class GrossPayPolicy {
+    <<interface>>
+    +grossPay(WorkPeriod) BigDecimal
+  }
+  class OvertimeGrossPayPolicy
+  class InvalidWorkPeriodException
+}
+namespace tax {
+  class TaxCalculator {
+    +taxFor(BigDecimal gross) BigDecimal
+  }
+  class TaxBand {
+    <<interface>>
+    +name() String
+    +appliesTo(BigDecimal gross) boolean
+    +taxFor(BigDecimal gross) BigDecimal
+  }
+  class RateTaxBand
+  class TaxBandRepository {
+    <<interface>>
+    +findAll() List~TaxBand~
+  }
+  class InMemoryTaxBandRepository
+  class TaxBandConfigurationException
+}
+namespace error {
+  class PayrollException {
+    <<abstract>>
+  }
+}
+Demo ..> PayrollService : wires
+PayrollService --> EmployeeRepository
+PayrollService --> GrossPayPolicy
+PayrollService --> TaxCalculator
+PayrollService ..> PayResult : creates
+PayResult --> Employee
+EmployeeRepository ..> Employee
+InMemoryEmployeeRepository ..|> EmployeeRepository
+GrossPayPolicy ..> WorkPeriod
+OvertimeGrossPayPolicy ..|> GrossPayPolicy
+TaxCalculator --> TaxBandRepository
+TaxBandRepository ..> TaxBand
+RateTaxBand ..|> TaxBand
+InMemoryTaxBandRepository ..|> TaxBandRepository
+EmployeeNotFoundException --|> PayrollException
+InvalidWorkPeriodException --|> PayrollException
+TaxBandConfigurationException --|> PayrollException
+```
+
+**How to read the arrows**
+
+| Arrow | Meaning |
+|---|---|
+| `──▷` (solid, hollow head) | extends (inheritance) |
+| `┈┈▷` (dashed, hollow head) | implements an interface |
+| `──>` (solid) | holds a reference, injected through the constructor |
+| `┈┈>` (dashed) | uses or creates it in a method |

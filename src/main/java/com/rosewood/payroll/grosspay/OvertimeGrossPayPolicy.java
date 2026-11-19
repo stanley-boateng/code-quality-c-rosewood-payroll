@@ -1,4 +1,4 @@
-package com.rosewood.payroll;
+package com.rosewood.payroll.grosspay;
 
 import java.math.BigDecimal;
 import java.util.Objects;

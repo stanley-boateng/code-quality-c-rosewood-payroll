@@ -1,4 +1,4 @@
-package com.rosewood.payroll;
+package com.rosewood.payroll.tax;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -6,8 +6,8 @@ import java.util.Objects;
 public final class RateTaxBand implements TaxBand {
 
     private final String name;
-    private final BigDecimal from;  //inclusive
-    private final BigDecimal upTo;  //exclusive; null only for open-ended top band
+    private final BigDecimal from;  // inclusive
+    private final BigDecimal upTo;  // exclusive; null only for open-ended top band
     private final BigDecimal rate;
 
     private RateTaxBand(String name, BigDecimal from, BigDecimal upTo, BigDecimal rate) {
@@ -30,14 +30,20 @@ public final class RateTaxBand implements TaxBand {
      * A band from {@code from} (inclusive) up to {@code upTo} (exclusive).
      */
     public static RateTaxBand between(String name, String from, String upTo, String rate) {
-        return new RateTaxBand(name, new BigDecimal(from), new BigDecimal(upTo), new BigDecimal(rate));
+        return new RateTaxBand(name,
+                BandValues.parse(name, "lower limit", from),
+                BandValues.parse(name, "upper limit", upTo),
+                BandValues.parse(name, "rate", rate));
     }
 
     /**
      * An open-ended band from {@code from} (inclusive) upwards.
      */
     public static RateTaxBand from(String name, String from, String rate) {
-        return new RateTaxBand(name, new BigDecimal(from), null, new BigDecimal(rate));
+        return new RateTaxBand(name,
+                BandValues.parse(name, "lower limit", from),
+                null,
+                BandValues.parse(name, "rate", rate));
     }
 
     @Override

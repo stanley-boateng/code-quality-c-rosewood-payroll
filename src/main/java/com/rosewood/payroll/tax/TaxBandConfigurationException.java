@@ -1,4 +1,6 @@
-package com.rosewood.payroll;
+package com.rosewood.payroll.tax;
+
+import com.rosewood.payroll.error.PayrollException;
 
 /**
  * The configured tax bands cannot produce a trustworthy tax amount for a gross pay.

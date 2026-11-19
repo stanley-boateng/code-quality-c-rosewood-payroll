@@ -1,4 +1,6 @@
-package com.rosewood.payroll;
+package com.rosewood.payroll.grosspay;
+
+import com.rosewood.payroll.error.PayrollException;
 
 /**
  * The hours or rate supplied for a pay period are not valid, so pay cannot be calculated.

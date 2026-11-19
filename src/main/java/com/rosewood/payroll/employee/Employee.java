@@ -1,4 +1,4 @@
-package com.rosewood.payroll;
+package com.rosewood.payroll.employee;
 
 /**
  * An employee on the payroll. The id and name are always present.
