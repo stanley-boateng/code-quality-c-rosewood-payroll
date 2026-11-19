@@ -1,11 +1,48 @@
 package com.rosewood.payroll;
 
-public class Demo {
-    public static void main(String[] args) {
-        PayrollCalculator calculator = new PayrollCalculator();
+import java.math.BigDecimal;
+import java.util.List;
 
-        System.out.println("Result e1, 40h @ 20     -> " + calculator.calculateNetPay("e1", 40, 20));
-        System.out.println("Result e2, 50h @ 30     -> " + calculator.calculateNetPay("e2", 50, 30));
-        System.out.println("Result unknown employee -> " + calculator.calculateNetPay("unknown", 40, 20));
+/**
+ * Wires the payroll components together (the composition root) and runs a few examples.
+ * This is the only class that knows which concrete implementations and settings are used.
+ */
+public class Demo {
+
+    public static void main(String[] args) {
+        PayrollService payroll = createPayrollService();
+
+        printPay(payroll, "e1", "40", "20");
+        printPay(payroll, "e2", "50", "30");
+        printPay(payroll, "unknown", "40", "20");
+        printPay(payroll, "e1", "-5", "20");
+    }
+
+    private static PayrollService createPayrollService() {
+        EmployeeRepository employees = new InMemoryEmployeeRepository(List.of(
+                new Employee("e1", "Efua Sarpong"),
+                new Employee("e2", "Kwame Owusu")));
+
+        GrossPayPolicy grossPayPolicy = new OvertimeGrossPayPolicy(
+                new BigDecimal("40"),    // standard hours per period
+                new BigDecimal("0.5"));  // overtime premium: time-and-a-half
+
+        TaxBandRepository taxBands = new InMemoryTaxBandRepository(List.of(
+                RateTaxBand.between("LOW", "0", "1000", "0.05"),
+                RateTaxBand.between("MEDIUM", "1000", "5000", "0.15"),
+                RateTaxBand.from("HIGH", "5000", "0.25")));
+
+        return new PayrollService(employees, grossPayPolicy, new TaxCalculator(taxBands));
+    }
+
+    private static void printPay(PayrollService payroll, String employeeId, String hours, String rate) {
+        try {
+            PayResult result = payroll.calculatePay(employeeId, WorkPeriod.of(hours, rate));
+            System.out.printf("%s (%s): gross GHS %s, tax GHS %s, net GHS %s%n",
+                    result.employee().name(), employeeId,
+                    result.grossPay(), result.tax(), result.netPay());
+        } catch (PayrollException e) {
+            System.out.println("Pay NOT calculated for " + employeeId + ": " + e.getMessage());
+        }
     }
 }
