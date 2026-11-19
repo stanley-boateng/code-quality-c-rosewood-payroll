@@ -2,11 +2,12 @@ package com.rosewood.payroll;
 
 import java.util.List;
 
+/** Holds a fixed list of tax bands in memory. */
 public final class InMemoryTaxBandRepository implements TaxBandRepository {
 
-    public final List<TaxBand> bands;
+    private final List<TaxBand> bands;
 
-    public InMemoryTaxBandRepository(list<TaxBand> bands) {
+    public InMemoryTaxBandRepository(List<TaxBand> bands) {
         this.bands = List.copyOf(bands);
     }
 
