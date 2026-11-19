@@ -3,11 +3,14 @@ package com.rosewood.payroll.tax;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+/**
+ * A band covering a range of gross pay, taxing the whole gross at one rate.
+ */
 public final class RateTaxBand implements TaxBand {
 
     private final String name;
     private final BigDecimal from;  // inclusive
-    private final BigDecimal upTo;  // exclusive; null only for open-ended top band
+    private final BigDecimal upTo;  // exclusive; null only for the open-ended top band
     private final BigDecimal rate;
 
     private RateTaxBand(String name, BigDecimal from, BigDecimal upTo, BigDecimal rate) {
@@ -28,22 +31,36 @@ public final class RateTaxBand implements TaxBand {
 
     /**
      * A band from {@code from} (inclusive) up to {@code upTo} (exclusive).
+     *
+     * @throws IllegalArgumentException if a value is not a number or the band is invalid
      */
     public static RateTaxBand between(String name, String from, String upTo, String rate) {
         return new RateTaxBand(name,
-                BandValues.parse(name, "lower limit", from),
-                BandValues.parse(name, "upper limit", upTo),
-                BandValues.parse(name, "rate", rate));
+                parse(name, "lower limit", from),
+                parse(name, "upper limit", upTo),
+                parse(name, "rate", rate));
     }
 
     /**
      * An open-ended band from {@code from} (inclusive) upwards.
+     *
+     * @throws IllegalArgumentException if a value is not a number or the band is invalid
      */
     public static RateTaxBand from(String name, String from, String rate) {
         return new RateTaxBand(name,
-                BandValues.parse(name, "lower limit", from),
+                parse(name, "lower limit", from),
                 null,
-                BandValues.parse(name, "rate", rate));
+                parse(name, "rate", rate));
+    }
+
+    private static BigDecimal parse(String bandName, String field, String value) {
+        Objects.requireNonNull(value, bandName + " " + field);
+        try {
+            return new BigDecimal(value.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    bandName + ": " + field + " is not a number: '" + value + "'", e);
+        }
     }
 
     @Override

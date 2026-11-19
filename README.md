@@ -54,11 +54,9 @@ Classes are grouped by feature. `employee`, `grosspay` and `tax` don't depend on
 ```mermaid
 classDiagram
 direction TB
-namespace app {
-  class Demo {
-    +main(String[] args)$
-  }
-}
+    class Demo {
+        +main(String[] args)$
+    }
 namespace payroll {
   class PayrollService {
     +calculatePay(String employeeId, WorkPeriod period) PayResult
@@ -148,3 +146,14 @@ TaxBandConfigurationException --|> PayrollException
 | `┈┈▷` (dashed, hollow head) | implements an interface |
 | `──>` (solid) | holds a reference, injected through the constructor |
 | `┈┈>` (dashed) | uses or creates it in a method |
+
+### Adding a tax band
+
+1. **New numbers only** (another range and rate): add a line to the band list in `Demo`, e.g.
+   `RateTaxBand.between("NAME", "from", "upTo", "rate")`. No new code.
+2. **New rules** (a different calculation): create a class in `tax` that implements `TaxBand`,
+   following the contract in its Javadoc, and add an instance to the band list in `Demo`.
+   `TaxCalculator`, `PayrollService` and the existing bands stay unchanged.
+
+Either way, adjust the neighbouring band's limits so ranges don't overlap or leave gaps.
+`TaxCalculator` refuses to calculate pay if they do, so a wiring mistake can't produce wrong pay.
