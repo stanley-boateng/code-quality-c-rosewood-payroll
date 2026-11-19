@@ -1,6 +1,6 @@
 package com.rosewood.payroll;
 
-public abstract class EmployeeNotFoundException extends PayrollException {
+public class EmployeeNotFoundException extends PayrollException {
 
     private final String employeeId;
 
