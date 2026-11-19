@@ -2,8 +2,8 @@
 
 ## Code smells and anti-patterns
 
-1. **Magic numbers.** `40` (standard hours), `0.5` (overtime premium) `1000` / `5000` (band limits) and the different rates are hard-coded inside the method.
-2. **Exception swallowing.** `catch (Exception e) {return 0;}` (line 32) catches every failure and turns it into a valid amount. The cause is lost and nothing is logged, hence the caller can't tell an error from a real zero. 
+1. **Magic numbers.** `40` (standard hours), `0.5` (overtime premium), `1000` / `5000` (band limits) and the different rates are hard-coded inside the method.
+2. **Exception swallowing.** `catch (Exception e) { return 0; }` (line 32) catches every failure and turns it into a valid amount. The cause is lost and nothing is logged, hence the caller can't tell an error from a real zero.
 3. **Null is not documented in the interface.** `InMemoryEmployeeRepository.findById` returns `null` for an unknown id, because that is what `Map.get` does. The `EmployeeRepository` interface doesn't say so, either in its return type (plain `Employee`, not `Optional<Employee>`) or in documentation. The only record of it is a comment in one implementation. Another implementation could equally throw, return `null`, or return a placeholder, so callers can't rely on any particular not-found behaviour.
 4. **No input validation.** Negative hours, zero rates and a `null` or blank employee id are all accepted.
 5. **Long method.** One method does the lookup, gross pay, overtime, tax band, net pay and console output.
@@ -27,7 +27,7 @@ PayrollCalculator calculator = mock(PayrollCalculator.class);
 when(calculator.calculateNetPay("e2", 50, 30)).thenReturn(1402.5);
 assertEquals(1402.5, calculator.calculateNetPay("e2", 50, 30));
 ```
-It mocks the class being tested, tells it to return 1402.5, then checks that the mock return 1402.5. `PayrollCalculator` never runs, hence overtime lines are never covered.
+It mocks the class being tested, tells it to return 1402.5, then checks that the mock returns 1402.5. `PayrollCalculator` never runs, hence overtime lines are never covered.
 
 ### `returnsPayForAnEmployee`: an assertion that cannot fail
 
@@ -46,11 +46,11 @@ This runs the real code, but `> 0` accepts a result with tax *added* instead of 
 
 ## The most serious problem
 
-**The catch-all `catch (Exception e) {return 0;}` in `calculateNetPay`.**
+**The catch-all `catch (Exception e) { return 0; }` in `calculateNetPay`.**
 
 A failure that looks like a valid result is the worst outcome:
 
 - An unknown id, bugs etc all come back as `0.0`. The caller can't tell the different issues apart.
-- It also hides any future fault in the calculation
+- It also hides any future fault in the calculation.
 
-**The Dependency inversion violation.** This is the reason the tests can't use controlled data, so the test suite can't be fixed properly until this is changed.git push
+**Close second: the dependency inversion violation.** It is the reason the tests can't use controlled data, so the test suite couldn't be fixed properly until this changed.
