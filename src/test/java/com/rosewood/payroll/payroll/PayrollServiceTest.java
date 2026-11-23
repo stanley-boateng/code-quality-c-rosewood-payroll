@@ -10,6 +10,7 @@ import com.rosewood.payroll.employee.EmployeeNotFoundException;
 import com.rosewood.payroll.employee.InMemoryEmployeeRepository;
 import com.rosewood.payroll.grosspay.GrossPayPolicy;
 import com.rosewood.payroll.grosspay.WorkPeriod;
+import com.rosewood.payroll.tax.TaxBandConfigurationException;
 import com.rosewood.payroll.tax.TaxPolicy;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -72,6 +73,19 @@ class PayrollServiceTest {
                 () -> assertEquals("unknown", exception.getEmployeeId()),
                 () -> assertEquals("No employee found with id 'unknown'",
                         exception.getMessage()));
+    }
+
+    @Test
+    void passesTaxFailuresToTheCallerInsteadOfPayingZero() {
+        TaxBandConfigurationException failure =
+                new TaxBandConfigurationException("No tax band covers gross pay 1000.00");
+        PayrollService service = serviceWith(period -> new BigDecimal("1000"), gross -> {
+            throw failure;
+        });
+
+        TaxBandConfigurationException thrown = assertThrows(TaxBandConfigurationException.class,
+                () -> service.calculatePay("e1", ANY_PERIOD));
+        assertSame(failure, thrown);
     }
 
     private PayrollService serviceWith(GrossPayPolicy grossPayPolicy, TaxPolicy taxPolicy) {
