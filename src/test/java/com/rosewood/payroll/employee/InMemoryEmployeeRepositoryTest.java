@@ -51,7 +51,8 @@ class InMemoryEmployeeRepositoryTest {
     void rejectsMissingEmployee() {
         List<Employee> withMissingEmployee = Arrays.asList(efua, null);
 
-        assertThrows(NullPointerException.class,
+        NullPointerException exception = assertThrows(NullPointerException.class,
                 () -> new InMemoryEmployeeRepository(withMissingEmployee));
+        assertEquals("employees must not contain null", exception.getMessage());
     }
 }

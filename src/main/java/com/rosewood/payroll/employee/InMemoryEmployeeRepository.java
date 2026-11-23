@@ -20,7 +20,7 @@ public final class InMemoryEmployeeRepository implements EmployeeRepository {
         Objects.requireNonNull(employees, "employees");
         Map<String, Employee> byId = new HashMap<>();
         for (Employee employee : employees) {
-            Objects.requireNonNull(employee, "employee");
+            Objects.requireNonNull(employee, "employees must not contain null");
             if (byId.putIfAbsent(employee.id(), employee) != null) {
                 // Id only: names are personal data and must not appear in exception messages.
                 throw new IllegalArgumentException("Duplicate employee id: " + employee.id());
