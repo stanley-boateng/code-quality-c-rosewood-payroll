@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class RateTaxBandTest {
 
-    private static final BigDecimal GROSS = new BigDecimal("2000");
+    private static final BigDecimal GROSS_PAY = new BigDecimal("2000");
 
     @ParameterizedTest(name = "gross {0} in MEDIUM: {1}")
     @CsvSource({"999.99, false", "1000, true", "4999.99, true", "5000, false"})
@@ -37,7 +37,7 @@ class RateTaxBandTest {
     void taxesTheWholeGrossAtTheRate() {
         RateTaxBand medium = RateTaxBand.between("MEDIUM", "1000", "5000", "0.15");
 
-        assertAmount("300", medium.calculateTax(GROSS));
+        assertAmount("300", medium.calculateTax(GROSS_PAY));
     }
 
     @Test
@@ -72,7 +72,7 @@ class RateTaxBandTest {
     void acceptsRatesFromZeroToOne(String rate, String expectedTax) {
         RateTaxBand band = RateTaxBand.from("ANY", "0", rate);
 
-        assertAmount(expectedTax, band.calculateTax(GROSS));
+        assertAmount(expectedTax, band.calculateTax(GROSS_PAY));
     }
 
     @ParameterizedTest(name = "rate {0} is rejected")

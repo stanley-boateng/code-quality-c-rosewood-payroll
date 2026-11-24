@@ -13,10 +13,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 class OvertimeGrossPayPolicyTest {
 
     private static final BigDecimal STANDARD_HOURS = new BigDecimal("40");
-    private static final BigDecimal TIME_AND_A_HALF = new BigDecimal("0.5");
+    private static final BigDecimal TIME_AND_A_HALF_PREMIUM = new BigDecimal("0.5");
 
     private final GrossPayPolicy policy =
-            new OvertimeGrossPayPolicy(STANDARD_HOURS, TIME_AND_A_HALF);
+            new OvertimeGrossPayPolicy(STANDARD_HOURS, TIME_AND_A_HALF_PREMIUM);
 
     @ParameterizedTest(name = "{0} h at {1} -> {2}")
     @CsvSource({"0, 20, 0", "39.5, 20, 790", "40, 20, 800"})
@@ -41,7 +41,8 @@ class OvertimeGrossPayPolicyTest {
     @ValueSource(strings = {"0", "-1"})
     void rejectsStandardHoursThatAreNotPositive(String standardHours) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new OvertimeGrossPayPolicy(new BigDecimal(standardHours), TIME_AND_A_HALF));
+                () -> new OvertimeGrossPayPolicy(
+                        new BigDecimal(standardHours), TIME_AND_A_HALF_PREMIUM));
         assertEquals("Standard hours must be greater than zero: " + standardHours,
                 exception.getMessage());
     }

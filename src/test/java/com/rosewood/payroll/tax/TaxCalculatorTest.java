@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TaxCalculatorTest {
 
-    private static final BigDecimal GROSS = new BigDecimal("2000.00");
+    private static final BigDecimal GROSS_PAY = new BigDecimal("2000.00");
 
     @Mock
     private TaxBand band;
@@ -38,19 +38,19 @@ class TaxCalculatorTest {
 
     @Test
     void acceptsAnyTaxBandImplementation() {
-        when(band.appliesTo(GROSS)).thenReturn(true);
-        when(band.calculateTax(GROSS)).thenReturn(new BigDecimal("123.45"));
+        when(band.appliesTo(GROSS_PAY)).thenReturn(true);
+        when(band.calculateTax(GROSS_PAY)).thenReturn(new BigDecimal("123.45"));
 
-        assertAmount("123.45", calculatorWith(band).calculateTax(GROSS));
+        assertAmount("123.45", calculatorWith(band).calculateTax(GROSS_PAY));
     }
 
     @ParameterizedTest(name = "tax {0} on gross 2000.00 is allowed")
     @CsvSource({"0", "2000.00"})
     void allowsTaxFromZeroUpToTheWholeGross(String tax) {
-        when(band.appliesTo(GROSS)).thenReturn(true);
-        when(band.calculateTax(GROSS)).thenReturn(new BigDecimal(tax));
+        when(band.appliesTo(GROSS_PAY)).thenReturn(true);
+        when(band.calculateTax(GROSS_PAY)).thenReturn(new BigDecimal(tax));
 
-        assertAmount(tax, calculatorWith(band).calculateTax(GROSS));
+        assertAmount(tax, calculatorWith(band).calculateTax(GROSS_PAY));
     }
 
     @Test
@@ -81,26 +81,26 @@ class TaxCalculatorTest {
     @ParameterizedTest(name = "tax {0} on gross 2000.00 is rejected")
     @CsvSource({"-0.01", "2000.01"})
     void rejectsTaxOutsideZeroToGross(String tax) {
-        when(band.appliesTo(GROSS)).thenReturn(true);
-        when(band.calculateTax(GROSS)).thenReturn(new BigDecimal(tax));
+        when(band.appliesTo(GROSS_PAY)).thenReturn(true);
+        when(band.calculateTax(GROSS_PAY)).thenReturn(new BigDecimal(tax));
         when(band.name()).thenReturn("BROKEN");
 
         TaxBandConfigurationException exception = assertThrows(
                 TaxBandConfigurationException.class,
-                () -> calculatorWith(band).calculateTax(GROSS));
+                () -> calculatorWith(band).calculateTax(GROSS_PAY));
         assertEquals("Tax band 'BROKEN' returned " + tax + " for gross pay 2000.00",
                 exception.getMessage());
     }
 
     @Test
     void rejectsNullTaxFromABand() {
-        when(band.appliesTo(GROSS)).thenReturn(true);
-        when(band.calculateTax(GROSS)).thenReturn(null);
+        when(band.appliesTo(GROSS_PAY)).thenReturn(true);
+        when(band.calculateTax(GROSS_PAY)).thenReturn(null);
         when(band.name()).thenReturn("BROKEN");
 
         TaxBandConfigurationException exception = assertThrows(
                 TaxBandConfigurationException.class,
-                () -> calculatorWith(band).calculateTax(GROSS));
+                () -> calculatorWith(band).calculateTax(GROSS_PAY));
         assertTrue(exception.getMessage().startsWith("Tax band 'BROKEN' returned null"));
     }
 
