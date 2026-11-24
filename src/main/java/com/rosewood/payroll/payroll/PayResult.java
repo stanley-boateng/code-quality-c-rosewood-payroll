@@ -15,8 +15,8 @@ public record PayResult(Employee employee, BigDecimal grossPay, BigDecimal tax, 
         Objects.requireNonNull(tax, "tax");
         Objects.requireNonNull(netPay, "netPay");
         if (grossPay.subtract(tax).compareTo(netPay) != 0) {
-            throw new IllegalArgumentException("Payslip does not add up: gross " + grossPay
-                    + " - tax " + tax + " != net " + netPay);
+            throw new IllegalArgumentException(
+                    "Payslip for employee " + employee.id() + " does not add up");
         }
     }
 

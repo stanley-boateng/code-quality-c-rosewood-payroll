@@ -24,7 +24,7 @@ class PayResultTest {
                 () -> new PayResult(efua,
                         new BigDecimal("1000.00"), new BigDecimal("150.00"),
                         new BigDecimal("900.00")));
-        assertEquals("Payslip does not add up: gross 1000.00 - tax 150.00 != net 900.00",
+        assertEquals("Payslip for employee e1 does not add up",
                 exception.getMessage());
     }
 
@@ -34,5 +34,14 @@ class PayResultTest {
                 new BigDecimal("1000.00"), new BigDecimal("150.00"), new BigDecimal("850.00"));
 
         assertEquals("PayResult[employeeId=e1]", result.toString());
+    }
+
+    @Test
+    void rejectsMissingEmployee() {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> new PayResult(null,
+                        new BigDecimal("1000.00"), new BigDecimal("150.00"),
+                        new BigDecimal("850.00")));
+        assertEquals("employee", exception.getMessage());
     }
 }
